@@ -20,12 +20,14 @@ public class TsumTestCases extends PageObject {
     private String loginRegFormXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[4]/auth-register/form/div[1]/input";
     private String registrationRegButtonXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[4]/auth-register/form/div[4]/button";
     private String loginRevealXpath = "/html/body/app-root/div/full-layout/div/header/div/div[1]/div[2]/div/div/a";
-
+    private String revealIncorrectEmailXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[1]/notices/div/notice/div/span";
+    private String invalidMail = "Пользователь с таким email уже существует";
 
     private String loginAuthFormXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[4]/auth-login/form/div[1]/input";
     private String passwordLoginFormXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[4]/auth-login/form/div[2]/input";
     private String loginAuthButtonXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[4]/auth-login/form/div[3]/button";
-
+    private String revealInvalidLoginXpath = "/html/body/app-root/div/full-layout/div/div/auth-layout/div/div[1]/notices/div/notice/div/span";
+    private String invalidPassword = "Неверный логин или пароль";
 
 
     private String testEmail = "test@tisting.ru";
@@ -47,13 +49,13 @@ public class TsumTestCases extends PageObject {
             e.printStackTrace();
         }
         driver.get("https://www.tsum.ru/");
+        driver.manage().window().maximize();
         try {
             sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        assertThat(driver.findElement(By.xpath(loginRevealXpath)).getText().equals(testRegMail));
+        assertThat(driver.findElement(By.xpath(loginRevealXpath)).getText().contains(testRegMail));
     }
 
     @Test
@@ -68,13 +70,43 @@ public class TsumTestCases extends PageObject {
             e.printStackTrace();
         }
         driver.get("https://www.tsum.ru/");
+        driver.manage().window().maximize();
         try {
-            sleep(3000);
+            sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        assertThat(driver.findElement(By.xpath(loginRevealXpath)).getText().equals(testEmail));
+        assertThat(driver.findElement(By.xpath(loginRevealXpath)).getText()).contains(testEmail);
 
+    }
+
+    @Test
+    public void TestLoginWithNonExistingEmail() {
+        driver.get("https://www.tsum.ru/login");
+        String testRegMail = GetDate()+testEmail;
+        driver.findElement(By.xpath(loginAuthFormXpath)).sendKeys(testRegMail);
+        driver.findElement(By.xpath(passwordLoginFormXpath)).sendKeys(testPassword);
+        clickOn(driver.findElement(By.xpath(loginAuthButtonXpath)));
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertThat(driver.findElement(By.xpath(revealInvalidLoginXpath)).getText()).contains(invalidPassword);
+    }
+
+    @Test
+    public void TestExistigMailRegistration(){
+        driver.get("https://www.tsum.ru/registration");
+        driver.findElement(By.xpath(loginRegFormXpath)).sendKeys(testEmail);
+        driver.findElement(By.xpath(passwordRegFormXpath)).sendKeys(testPassword);
+        clickOn(driver.findElement(By.xpath(registrationRegButtonXpath)));
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertThat(driver.findElement(By.xpath(revealIncorrectEmailXpath)).getText()).contains(invalidMail);
 
     }
 
