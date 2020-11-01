@@ -1,4 +1,4 @@
-Testin excersise for Tsum.
+Testing excersise for Tsum.
 Tested on linux ubuntu 20.04 LST
 
 Run: git clone https://github.com/Chandr12345/Tsum.git<br>
